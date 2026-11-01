@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="LargeNumerics/LargeNumerics.vcxproj" Id="dcb547fc-9fe4-46b5-a4e9-0e3dbb7ce720" />
+</Solution>

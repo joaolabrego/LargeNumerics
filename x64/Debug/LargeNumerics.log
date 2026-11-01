@@ -1,0 +1,3 @@
+﻿  Program.cpp
+D:\LargeNumerics\LargeNumerics\LargeNumerics\Program.cpp(6,6): warning C4326: tipo de retorno de 'main' deve ser 'int' em vez de 'void'
+  LargeNumerics.vcxproj -> D:\LargeNumerics\LargeNumerics\x64\Debug\LargeNumerics.exe
