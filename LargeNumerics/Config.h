@@ -35,86 +35,79 @@ namespace BIN
 {
 	static const DIGIT RADIX = 2;
 	static const size_t DIGIT_LENGTH = sizeof(DIGIT) * CHAR_BIT;
-	static const DIGIT BASE = DIGIT(pow(RADIX, DIGIT_LENGTH));
-	static const DIGIT MAXIMUM_VALUE = DIGIT(BASE - 1);
-}
+	static DIGIT BASE = DIGIT(pow(RADIX, DIGIT_LENGTH));
+	static DIGIT MAXIMUM_VALUE = DIGIT(BASE - 1);
+};
 namespace DEC
 {
-	static const DIGIT RADIX = 10;
-	static const size_t DIGIT_LENGTH = size_t(log10(double(BIN::BASE / 2)));
-	static const DIGIT BASE = DIGIT(pow(RADIX, double(DIGIT_LENGTH)));
-	static const DIGIT MAXIMUM_VALUE = DIGIT(BASE - 1);
-}
+	static DIGIT RADIX = 10;
+	static size_t DIGIT_LENGTH = size_t(log10(double(BIN::BASE / 2)));
+	static DIGIT BASE = DIGIT(pow(RADIX, double(DIGIT_LENGTH)));
+	static DIGIT MAXIMUM_VALUE = DIGIT(BASE - 1);
+};
 
-static enum class COMPARISON : INT8 { MINOR = -1, EQUAL = 0, MAJOR = 1 };
-static enum class SIGN : INT8 { NEGATIVE = -1, POSITIVE = 1 };
-static enum class SIGNAL : char { NEGATIVE = '-', POSITIVE = '+' };
+enum class COMPARISON : INT8 { MINOR = -1, EQUAL = 0, MAJOR = 1 };
+enum class SIGN : INT8 { NEGATIVE = -1, POSITIVE = 1 };
+enum class SIGNAL : char { NEGATIVE = '-', POSITIVE = '+' };
 
-static enum class ANGLE_UNIT : char { DEGREE = 'D', GRADIAN = 'G', RADIAN = 'R' };
-static enum class ANGLE_QUADRANT : UINT8 { FIRST = 0, SECOND = 1, THIRD = 2, FOURTH = 3 };
-static enum class ANGLE_TYPE : UINT8 { ANGLE = 0, SIN = 1, COS = 2, TAN = 3, COT = 4, SEC = 5, CSC = 6, SINH = 7, COSH = 8, TANH = 9, COTH = 10, SECH = 11, CSCH = 12 };
+enum class ANGLE_UNIT : char { DEGREE = 'D', GRADIAN = 'G', RADIAN = 'R' };
+enum class ANGLE_QUADRANT : UINT8 { FIRST = 1, SECOND = 2, THIRD = 3, FOURTH = 4 };
+enum class ANGLE_TYPE : UINT8 { ANGLE = 0, SIN = 1, COS = 2, TAN = 3, COT = 4, SEC = 5, CSC = 6, SINH = 7, COSH = 8, TANH = 9, COTH = 10, SECH = 11, CSCH = 12 };
 
-static const char DECIMAL_SEPARATOR = DecimalSeparator().front();
-static const char THOUSANDS_SEPARATOR = GroupingSeparator().front();
-static const size_t THOUSANDS_LENGTH = GroupingLength();
-static const bool SHOW_POSITIVE = ShowPositiveSignal();
-static const bool SHOW_GROUPED = ShowGrouped();
-static const char NEGATIVE_SIGNAL = NegativeSignal().front();
-static const char POSITIVE_SIGNAL = PositiveSignal().front();
+static size_t counterPrecision = 0;
 
-namespace
+class Configuration {
+public:
+	Configuration() {}
+	~Configuration() {}
+	static SIGN Sign(const char signal);
+	static SIGN Sign(const SIGNAL signal);
+	static SIGNAL Signal(const char signal);
+	static SIGNAL Signal(const SIGN sign);
+	static SIGN NotSign(const SIGN sign);
+	static SIGNAL NotSignal(const SIGNAL signal);
+	static bool IsSignal(const char signal);
+	static COMPARISON NotComparison(const COMPARISON comparison);
+	static size_t GetPrecision(bool ignoreExtra = false);
+	static void UpPrecision();
+	static void DownPrecision();
+
+	const char DECIMAL_SEPARATOR = DecimalSeparator().front();
+	const char THOUSANDS_SEPARATOR = GroupingSeparator().front();
+	const size_t THOUSANDS_LENGTH = GroupingLength();
+	const bool SHOW_POSITIVE = ShowPositiveSignal();
+	const bool SHOW_GROUPED = ShowGrouped();
+	const char NEGATIVE_SIGNAL = NegativeSignal().front();
+	const char POSITIVE_SIGNAL = PositiveSignal().front();
+
+private:
+	static string NegativeSignal();
+	static string PositiveSignal();
+	static string DecimalSeparator();
+	static string GroupingSeparator();
+	static size_t GroupingLength();
+	static bool ShowPositiveSignal();
+	static bool ShowGrouped();
+};
+
+extern Configuration* Config;
+
+/**************************************************/
+template <class T> SIGN ToAbsolute(T& value)
+/**************************************************/
 {
-	/****************************/
-	static string NegativeSignal()
-	/****************************/
+	if (value < 0)
 	{
-		string result = std::use_facet<std::moneypunct<char>>(LOCALE).negative_sign();
+		value = -value;
+		return SIGN::NEGATIVE;
+	}
 
-		return result.empty() ? "-" : result;
-	}
-	/****************************/
-	static string PositiveSignal()
-	/****************************/
-	{
-		string result = std::use_facet<std::moneypunct<char>>(LOCALE).positive_sign();
-
-		return result.empty() ? "+" : result;
-	}
-	/******************************/
-	static string DecimalSeparator()
-	/******************************/
-	{
-		string result = string(1, std::use_facet< std::numpunct<char> >(LOCALE).decimal_point());
-
-		return result.empty() ? "," : result;
-	}
-	/*******************************/
-	static string GroupingSeparator()
-	/*******************************/
-	{
-		string result = string(1, std::use_facet<std::numpunct<char>>(LOCALE).thousands_sep());
-
-		return result.empty() ? "." : result;
-	}
-	/****************************/
-	static size_t GroupingLength()
-	/****************************/
-	{
-		size_t result = std::use_facet<std::numpunct<char>>(LOCALE).grouping().front();
-
-		return result;
-	}
-	/******************************/
-	static bool ShowPositiveSignal()
-	/******************************/
-	{
-		return std::use_facet<std::moneypunct<char>>(LOCALE).positive_sign().size();
-	}
-	/***********************/
-	static bool ShowGrouped()
-	/***********************/
-	{
-		return string(1, std::use_facet<std::numpunct<char>>(LOCALE).thousands_sep()).size();
-	}
+	return SIGN::POSITIVE;
 }
+
+
+
 #endif // Config_H
+/***********/
+/*** EOF ***/
+/***********/

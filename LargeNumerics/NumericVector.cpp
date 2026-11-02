@@ -6,7 +6,69 @@
 /******************************************************************************/
 
 #include "NumericVector.h"
+/*****************************************************************/
+VECTOR& NumericVector::ToValue(VECTOR& target, const string& value)
+/*****************************************************************/
+{
+	char signal;
+	string wholePart,
+		decimalPart;
 
+	ToNull(target);
+	if (NumericString::Parse(value, signal, wholePart, decimalPart))
+	{
+		if (signal == char(SIGNAL::NEGATIVE))
+			throw invalid_argument("Valor negativo não permitido em NumericVector");
+		if (!decimalPart.empty())
+			throw invalid_argument("Valor deve ser inteiro em NumericVector");
+		wholePart = NumericString::PadLeft(wholePart);
+		for (size_t i = wholePart.size(); i;)
+			target.push_back(NumericString::StringToDigit(wholePart.substr(i -= DEC::DIGIT_LENGTH, DEC::DIGIT_LENGTH)));
+	}
+	else
+		throw invalid_argument("Valor inválido em NumericVector");
+
+	return target;
+}
+/*********************************************************************/
+string NumericVector::ToString(const VECTOR& value, const bool grouped)
+/*********************************************************************/
+{
+	string result;
+
+	if (IsNull(value))
+		return UNDEFINED;
+	if (IsZero(value))
+		return "0";
+	for (size_t i = value.size(); i;)
+		result.append(NumericString::PadLeft(to_string(value.at(--i))));
+	result = NumericString::LeftTrim(result);
+	if (grouped)
+		return NumericString::Agroup(result);
+
+	return result;
+}
+
+/*************************************************************************************/
+VECTOR NumericVector::SubVector(const VECTOR& value, const size_t start, size_t length)
+/*************************************************************************************/
+{
+	size_t lengthValue = value.size(),
+		end;
+	VECTOR result;
+
+	if (lengthValue && start < lengthValue)
+	{
+		if (length == string::npos)
+			length = value.size();
+		if ((end = start + length) > lengthValue)
+			result.assign(value.begin() + start, value.end());
+		else
+			result.assign(value.begin() + start, value.begin() + end);
+	}
+
+	return result;
+}
 /**********************************************************************************/
 COMPARISON NumericVector::Compare(const VECTOR& leftComparand, DIGIT rightComparand)
 /**********************************************************************************/
@@ -69,122 +131,6 @@ void NumericVector::Normalize(VECTOR& value)
 		else
 			value = ZERO;
 	}
-}
-/*************************************************************************************/
-VECTOR NumericVector::SubVector(const VECTOR& value, const size_t start, size_t length)
-/*************************************************************************************/
-{
-	size_t lengthValue = value.size(),
-		end;
-	VECTOR result;
-
-	if (lengthValue && start < lengthValue)
-	{
-		if (length == string::npos)
-			length = value.size();
-		if ((end = start + length) > lengthValue)
-			result.assign(value.begin() + start, value.end());
-		else
-			result.assign(value.begin() + start, value.begin() + end);
-	}
-
-	return result;
-}
-/****************************************************************/
-VECTOR& NumericVector::Assign(VECTOR& target, const VECTOR& value)
-/****************************************************************/
-{
-	return (target.assign(value.begin(), value.end()), target);
-}
-/**************************************************************/
-VECTOR& NumericVector::Insert(VECTOR& target, const DIGIT value)
-/**************************************************************/
-{
-	return (target.insert(target.begin(), value), target);
-}
-/**********************************************************************************/
-VECTOR& NumericVector::Insert(VECTOR& target, const size_t count, const DIGIT value)
-/**********************************************************************************/
-{
-	return (target.insert(target.begin(), count, value), target);
-}
-/****************************************************************/
-VECTOR& NumericVector::Insert(VECTOR& target, const VECTOR& value)
-/****************************************************************/
-{
-	return (target.insert(target.begin(), value.begin(), value.end()), target);
-}
-/**************************************************************/
-VECTOR& NumericVector::Append(VECTOR& target, const DIGIT value)
-/**************************************************************/
-{
-	return (target.push_back(value), target);
-}
-/**********************************************************************************/
-VECTOR& NumericVector::Append(VECTOR& target, const size_t count, const DIGIT value)
-/*******************************************************************************/
-{
-	return (target.insert(target.end(), count, value), target);
-}
-/****************************************************************/
-VECTOR& NumericVector::Append(VECTOR& target, const VECTOR& value)
-/****************************************************************/
-{
-	return (target.insert(target.end(), value.begin(), value.end()), target);
-}
-/*******************************************/
-VECTOR& NumericVector::ToNull(VECTOR& target)
-/*******************************************/
-{
-	return (target = NULL, target);
-}
-/*******************************************/
-VECTOR& NumericVector::ToZero(VECTOR& target)
-/*******************************************/
-{
-	return (target = ZERO, target);
-}
-/******************************************/
-VECTOR& NumericVector::ToOne(VECTOR& target)
-/******************************************/
-{
-	return (target = ONE, target);
-}
-/*********************************************/
-bool NumericVector::IsNull(const VECTOR& value)
-/********************************************/
-{
-	return value.empty();
-}
-/*********************************************/
-bool NumericVector::IsZero(const VECTOR& value)
-/********************************************/
-{
-	return value.size() == 1 && !value.front();
-}
-/***************************************************/
-bool NumericVector::IsNullOrZero(const VECTOR& value)
-/***************************************************/
-{
-	return value.empty() || (value.size() == 1 && !value.front());
-}
-/********************************************/
-bool NumericVector::IsOne(const VECTOR& value)
-/********************************************/
-{
-	return value.size() == 1 && value.front() == 1;
-}
-/********************************************/
-bool NumericVector::IsOdd(const VECTOR& value)
-/********************************************/
-{
-	return value.size() && (value.front() & 0x1);
-}
-/*********************************************/
-bool NumericVector::IsEven(const VECTOR& value)
-/*********************************************/
-{
-	return value.size() && !(value.front() & 0x1);
 }
 /****************************************************************************/
 VECTOR NumericVector::CalculateSum(const VECTOR& augend, const VECTOR& addend)
@@ -304,7 +250,12 @@ VECTOR& NumericVector::Decrement(VECTOR& minuend)
 		{
 			for (i = 0; i < length && !minuend.at(i); ++i)
 				minuend.at(i) = DEC::MAXIMUM_VALUE;
-			Normalize(minuend);
+			if (i < length) {
+				--minuend.at(i);
+				Normalize(minuend);
+			}
+			else
+				minuend = NULL;
 		}
 	}
 
@@ -464,8 +415,8 @@ VECTOR NumericVector::Divide(VECTOR dividend, VECTOR divisor, VECTOR& remainder)
 		}
 		else if (comparison == COMPARISON::MAJOR)
 		{
-			high = partialDividend.size() > divisorLength ? partialDividend[divisorLength] : 0;
-			digit = min(((DOUBLE_DIGIT)high * (DOUBLE_DIGIT)DEC::BASE + (DOUBLE_DIGIT)partialDividend[divisorLength - 1]) / divisor.back(), DEC::BASE - 1);
+			high = partialDividend.size() > divisorLength ? partialDividend.at(divisorLength) : 0;
+			digit = min(((DOUBLE_DIGIT)high * (DOUBLE_DIGIT)DEC::BASE + (DOUBLE_DIGIT)partialDividend.at(divisorLength - 1)) / divisor.back(), DEC::MAXIMUM_VALUE);
 			for(;;)
 			{
 				product = Multiply(divisor, digit);
@@ -506,15 +457,14 @@ void NumericVector::ShiftLeft(VECTOR& value, size_t count)
 			factor *= 10;
 		for (size_t i = 0; i < value.size(); ++i)
 		{
-			digit = DOUBLE_DIGIT(value[i]) * factor + carry;
-			value[i] = DIGIT(digit % DEC::BASE);
+			digit = DOUBLE_DIGIT(value.at(i)) * factor + carry;
+			value.at(i) = DIGIT(digit % DEC::BASE);
 			carry = digit / DEC::BASE;
 		}
 		if (carry)
 			value.push_back(DIGIT(carry));
 	}
 }
-
 /***********************************************************/
 VECTOR NumericVector::ShiftRight(VECTOR& value, size_t count)
 /***********************************************************/
@@ -532,7 +482,7 @@ VECTOR NumericVector::ShiftRight(VECTOR& value, size_t count)
 	wholeShift = count / DEC::DIGIT_LENGTH;
 	digitShift = count % DEC::DIGIT_LENGTH;
 	if (wholeShift >= value.size())
-		return (discarded = value, ToZero(value), discarded);
+		return (discarded = value, value = ZERO, discarded);
 	if (wholeShift)
 	{
 		discarded.assign(value.begin(), value.begin() + wholeShift);
@@ -544,8 +494,8 @@ VECTOR NumericVector::ShiftRight(VECTOR& value, size_t count)
 			factor *= 10;
 		for (size_t i = value.size(); i > 0;)
 		{
-			digit = carry * DEC::BASE + value[--i];
-			value[i] = DIGIT(digit / factor);
+			digit = carry * DEC::BASE + value.at(--i);
+			value.at(i) = DIGIT(digit / factor);
 			carry = digit % factor;
 		}
 		if (carry)
@@ -553,7 +503,7 @@ VECTOR NumericVector::ShiftRight(VECTOR& value, size_t count)
 	}
 	Normalize(value);
 	if (discarded.empty())
-		ToZero(discarded);
+		discarded = ZERO;
 	else
 		Normalize(discarded);
 
@@ -594,39 +544,83 @@ void NumericVector::CalculateDigit(const VECTOR& radicand, size_t degree, VECTOR
 {
 	VECTOR potency;
 	DIGIT minimum = 0,
-		maximum = DEC::BASE,
+		maximum = DEC::MAXIMUM_VALUE,
 		digit;
 	COMPARISON comparison;
 
-	root.insert(root.begin(), DEC::BASE - 1);
-	if (Compare(Power(root,degree), radicand) == COMPARISON::MINOR)
-		ToZero(remainder);
-	else
+	root.insert(root.begin(), maximum);
+	potency = Power(root, degree);
+	comparison = Compare(potency, radicand);
+
+	if (comparison == COMPARISON::MINOR)
 	{
-		root.front() = 0;
-		do
+		remainder = Subtract(radicand, potency);
+		return;
+	}
+
+	if (comparison == COMPARISON::EQUAL)
+	{
+		remainder = ZERO;
+		return;
+	}
+
+	root.front() = 0;
+
+	if (!IsZero(root))
+	{
+		VECTOR basePower = Power(root, degree);
+		VECTOR delta = Subtract(radicand, basePower);
+		VECTOR degreeValue;
+
+		for (size_t value = degree; value; value /= DEC::BASE)
+			degreeValue.push_back(DIGIT(value % DEC::BASE));
+
+		VECTOR slope = Multiply(Power(root, degree - 1), degreeValue);
+		VECTOR estimate = Divide(delta, slope);
+
+		if (Compare(estimate, DEC::MAXIMUM_VALUE) == COMPARISON::MAJOR)
+			digit = DEC::MAXIMUM_VALUE;
+		else
+			digit = estimate.empty() ? 0 : estimate.front();
+
+		root.front() = digit;
+		potency = Power(root, degree);
+
+		while (digit && Compare(potency, radicand) == COMPARISON::MAJOR)
 		{
-			digit = DIGIT((DOUBLE_DIGIT(minimum) + maximum) >> 1);
-			root.front() = digit;
-			potency = Power(root, degree);
-			comparison = Compare(potency, radicand);
-			if (comparison == COMPARISON::MINOR)
-				minimum = digit + 1;
-			else if (comparison == COMPARISON::EQUAL)
-			{
-				maximum = digit;
-				break;
-			}
-			else
-				maximum = digit - 1;
-		} while (minimum <= maximum);
-		if (digit != maximum)
-		{
-			root.front() = maximum;
+			root.front() = --digit;
 			potency = Power(root, degree);
 		}
+
 		remainder = Subtract(radicand, potency);
+		return;
 	}
+
+	do
+	{
+		digit = DIGIT((DOUBLE_DIGIT(minimum) + maximum) >> 1);
+		root.front() = digit;
+		potency = Power(root, degree);
+		comparison = Compare(potency, radicand);
+
+		if (comparison == COMPARISON::MINOR)
+			minimum = digit + 1;
+		else if (comparison == COMPARISON::EQUAL)
+		{
+			maximum = digit;
+			break;
+		}
+		else
+			maximum = digit - 1;
+	} while (minimum <= maximum);
+
+	if (digit != maximum)
+	{
+		root.front() = maximum;
+		potency = Power(root, degree);
+	}
+
+	remainder = Subtract(radicand, potency);
 }
 /**********************************************************************************/
 VECTOR NumericVector::Root(const VECTOR& radicand, size_t degree, VECTOR& remainder)

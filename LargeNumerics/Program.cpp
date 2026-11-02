@@ -3,11 +3,13 @@
 
 #include <iostream>
 
-void main()
+int main()
 {
     std::cout << "Hello World!\n";
     std::cout << "Pressione Enter para continuar...";
     std::cin.get();
+
+    return 0;
 }
 
 // Executar programa: Ctrl + F5 ou Menu Depurar > Iniciar Sem Depuração

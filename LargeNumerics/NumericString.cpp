@@ -65,8 +65,8 @@ string NumericString::Agroup(const string& value)
 	string result;
 	size_t i = value.size();
 
-	while (i > THOUSANDS_LENGTH)
-		result.insert(0, string(1, THOUSANDS_SEPARATOR).append(value.substr(i -= THOUSANDS_LENGTH, THOUSANDS_LENGTH)));
+	while (i > Config->THOUSANDS_LENGTH)
+		result.insert(0, string(1, Config->THOUSANDS_SEPARATOR).append(value.substr(i -= Config->THOUSANDS_LENGTH, Config->THOUSANDS_LENGTH)));
 
 	return result.insert(0, value.substr(0, i));
 }
@@ -155,30 +155,30 @@ bool NumericString::Parse(string value, char& signal, string& wholePart, string&
 	if (value.empty())
 		return false;
 	signal = value.front();
-	if (Config::IsSignal(signal))
+	if (Config->IsSignal(signal))
 		value.erase(0, 1);
 	else if (isdigit(signal))
 		signal = char(SIGNAL::POSITIVE);
 	else
 		return false;
-	decimalPosition = value.find(DECIMAL_SEPARATOR);
+	decimalPosition = value.find(Config->DECIMAL_SEPARATOR);
 	if (decimalPosition == string::npos)
 	{
-		wholePart = LeftTrim(Replace(value, string(1, THOUSANDS_SEPARATOR), ""));
+		wholePart = LeftTrim(Replace(value, string(1, Config->THOUSANDS_SEPARATOR), ""));
 		decimalPart.clear();
 	}
 	else if (decimalPosition && decimalPosition < value.size() - 1)
 	{
-		wholePart = LeftTrim(Replace(value.substr(0, decimalPosition), string(1, THOUSANDS_SEPARATOR), ""));
+		wholePart = LeftTrim(Replace(value.substr(0, decimalPosition), string(1, Config->THOUSANDS_SEPARATOR), ""));
 		lengthDecimals = (decimalPart = Replace(RightTrim(value.substr(decimalPosition + 1)), ELLIPSIS, "#")).size();
-		if (ellipsed = decimalPart.back() == '#')
+		if ((ellipsed = decimalPart.back() == '#'))
 		{
 			decimalPart.pop_back();
 			--lengthDecimals;
 		}
 		if (!IsNumeric(decimalPart))
 			return false;
-		precision = NumericString::GetPrecision() * DEC::DIGIT_LENGTH;
+		precision = Config->GetPrecision() * DEC::DIGIT_LENGTH;
 		if (ellipsed || lengthDecimals > DECIMAL_PLACES * DEC::DIGIT_LENGTH)
 		{
 			if ((repetend = Repetend(decimalPart)).empty())
@@ -227,7 +227,7 @@ string NumericString::Repetend(const string& value)
 		for (size_t i = length - 1; i > 0; i--)
 		{
 			counter = CountDigits(value, digit = value.substr(i, length - i));
-			if (counter >= THOUSANDS_LENGTH && counter >= lastcounter)
+			if (counter >= Config->THOUSANDS_LENGTH && counter >= lastcounter)
 			{
 				lastcounter = counter;
 				result = digit;
@@ -244,10 +244,32 @@ VECTOR NumericString::Repetend(const string& value, const size_t times)
 	VECTOR result;
 
 	if (repetend.empty())
-		return VECTOR(GetPrecision() * times, 0);
-	repetend = NumericString::PadRight(repetend, GetPrecision() * DEC::DIGIT_LENGTH * times, repetend);
+		return VECTOR(Config->GetPrecision() * times, 0);
+	repetend = NumericString::PadRight(repetend, Config->GetPrecision() * DEC::DIGIT_LENGTH * times, repetend);
 	for (size_t i = repetend.size(); i;)
 		result.push_back(stoul(repetend.substr(i -= DEC::DIGIT_LENGTH, DEC::DIGIT_LENGTH)));
+
+	return result;
+}
+/*****************************************************/
+DIGIT NumericString::StringToDigit(const string& value)
+/*****************************************************/
+{
+	DIGIT result = 0;
+	DIGIT maximum,
+		digit;
+
+	if (!IsNumeric(value))
+		return 0;
+	maximum = (std::numeric_limits<DIGIT>::max)();
+	for (char character : value)
+	{
+		digit = DIGIT(character - '0');
+		if (result > (maximum - digit) / 10)
+			throw out_of_range("Valor excede o limite de DIGIT");
+
+		result = result * 10 + digit;
+	}
 
 	return result;
 }

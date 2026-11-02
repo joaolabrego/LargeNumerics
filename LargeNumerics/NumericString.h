@@ -10,8 +10,9 @@
 
 #include "Config.h"
 
-class NumericString: private string
+struct NumericString: private string
 {
+public:
 	static string PadLeft(const string& value, size_t length = DEC::DIGIT_LENGTH, const string& filler = "0");
 	static string PadRight(const string& value, size_t length = DEC::DIGIT_LENGTH, const string& filler = "0");
 	static string LeftTrim(const string& value);
@@ -25,6 +26,7 @@ class NumericString: private string
 	static void Decrement(string& value);
 	static bool IsNumeric(const string& value);
 	static bool Parse(string value, char& signal, string& wholePart, string& decimalPart);
+	static DIGIT StringToDigit(const string& value);
 };
 
 #endif // NumericString_H

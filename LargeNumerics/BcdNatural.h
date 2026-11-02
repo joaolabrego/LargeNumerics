@@ -8,75 +8,83 @@
 #ifndef BcdNatural_H
 #define BcdNatural_H
 
-#include "NumericString.h"
+#include "NumericVector.h"
 
-struct BcdNatural: private VECTOR
+struct BcdNatural
 {
 public:
+	/* Constructors and Destructor */
 	BcdNatural() {}
-	BcdNatural(const DIGIT value) { ToValue(value); }
+	BcdNatural(const DIGIT value) { *this = value; }
 	BcdNatural(const char value[]) { *this = string(value); }
 	BcdNatural(const string& value) { *this = value; }
 	BcdNatural(const VECTOR& value) { *this = value; }
+	BcdNatural(const BcdNatural& value) { *this = value; }
 	~BcdNatural() {}
 
-	BcdNatural& ToNull() { return (clear(), *this); }
-	BcdNatural& ToZero() { return (assign(ZERO.begin(), ZERO.end()), *this); }
-	BcdNatural& ToOne() { return (assign(ONE.begin(), ONE.end()), *this); }
-	BcdNatural& ToValue(DIGIT value) { ToNull(); push_back(value); return *this; }
-	string ToString(const bool grouped = SHOW_GROUPED) const;
+	/* Assignment Operations */
+	BcdNatural& ToNull() { return (NumericVector::ToNull(data), *this); }
+	BcdNatural& ToZero() { return (NumericVector::ToZero(data), *this); }
+	BcdNatural& ToOne() { return (NumericVector::ToOne(data), *this); }
 
-	BcdNatural& operator =(DIGIT value) { return ToValue(value); }
-	BcdNatural& operator =(const char value[]) { return *this = string(value); }
-	BcdNatural& operator =(const string& value);
-	BcdNatural& operator =(const VECTOR& value) { return (assign(value.begin(), value.end()), *this); }
-	BcdNatural& operator =(const BcdNatural& value) { return (assign(value.begin(), value.end()), *this); }
+	/* Conversion Operations */
+	VECTOR AsVector() const { return data; }
+	string ToString(const bool grouped = SHOW_GROUPED) const { return NumericVector::ToString(data, grouped); }
 
-	bool IsNull() const { return empty(); }
-	bool IsZero() const { return size() == 1 && !front(); }
-	bool IsNullOrZero() const { return empty() || (size() == 1 && !front()); }
-	bool IsOne() const { return size() == 1 && front() == 1; }
-	bool IsOdd() const { return size() && (front() & 0x1); }
-	bool IsEven() const { return size() && !(front() & 0x1); }
-	COMPARISON Compare(const DIGIT rightComparand) const;
-	COMPARISON Compare(const BcdNatural& rightComparand) const;
+	/* Assignment Operators */
+	BcdNatural& operator =(DIGIT value) { return (NumericVector::ToValue(data, value), *this); }
+	BcdNatural& operator =(const char value[]) { return (NumericVector::ToValue(data, string(value)), *this); }
+	BcdNatural& operator =(const string& value) { return (NumericVector::ToValue(data, value), *this); }
+	BcdNatural& operator =(const VECTOR& value) { return (NumericVector::ToValue(data, value), *this); }
+	BcdNatural& operator =(const BcdNatural& value) { return (NumericVector::ToValue(data, value.data), *this); }
 
-	BcdNatural Divide(const DIGIT divisor, DIGIT& remainder) const;
-	DIGIT BinarySearchDigit(const BcdNatural& divisor, BcdNatural& remainder) const;
-	BcdNatural Divide(const BcdNatural& divisor, BcdNatural& remainder) const;
-	BcdNatural Power(DIGIT exponent) const;
-	void BinarySearchDigit(DIGIT degree, BcdNatural& root, BcdNatural& remainder) const;
-	BcdNatural Root(const DIGIT degree, BcdNatural& remainder) const;
-	BcdNatural GCD(const BcdNatural& rightValue) const;
-	BcdNatural LCM(const BcdNatural& rightValue) const;
-	BcdNatural Factorial() const;
+	/* Boolean Attributes */
+	bool IsNull() const { return NumericVector::IsNull(data); }
+	bool IsZero() const { return NumericVector::IsZero(data); }
+	bool IsNullOrZero() const { return NumericVector::IsNullOrZero(data); }
+	bool IsOne() const { return NumericVector::IsOne(data); }
+	bool IsOdd() const { return NumericVector::IsOdd(data); }
+	bool IsEven() const { return NumericVector::IsEven(data); }
+	COMPARISON Compare(const DIGIT rightComparand) const { return NumericVector::Compare(data, rightComparand); }
+	COMPARISON Compare(const BcdNatural& rightComparand) const { return NumericVector::Compare(data, rightComparand.data); }
 
-	bool operator <(const DIGIT rightComparand) const { return Compare(rightComparand) == COMPARISON::MINOR; }
-	bool operator <=(const DIGIT rightComparand) const { return Compare(rightComparand) != COMPARISON::MAJOR; }
-	bool operator ==(const DIGIT rightComparand) const { return Compare(rightComparand) == COMPARISON::EQUAL; }
-	bool operator !=(const DIGIT rightComparand) const { return Compare(rightComparand) != COMPARISON::EQUAL; }
-	bool operator >(const DIGIT rightComparand) const { return Compare(rightComparand) == COMPARISON::MAJOR; }
-	bool operator >=(const DIGIT rightComparand) const { return Compare(rightComparand) != COMPARISON::MINOR; }
+	/* Arithmetic Operations */
+	BcdNatural Divide(const DIGIT divisor, DIGIT& remainder) const { return NumericVector::Divide(data, divisor, remainder); }
+	BcdNatural Divide(const BcdNatural& divisor, BcdNatural& remainder) const { return NumericVector::Divide(data, divisor.data, remainder.data); }
+	BcdNatural Power(DIGIT exponent) const { return NumericVector::Power(data, exponent); }
+	BcdNatural Root(const DIGIT degree, BcdNatural& remainder) const { return NumericVector::Root(data, degree, remainder.data); }
+	BcdNatural GCD(const BcdNatural& rightValue) const { return NumericVector::GCD(data, rightValue.data); }
+	BcdNatural LCM(const BcdNatural& rightValue) const { return NumericVector::LCM(data, rightValue.data); }
+	BcdNatural Factorial() const { return NumericVector::Factorial(data); }
 
-	bool operator <(const BcdNatural& rightComparand) const { return Compare(rightComparand) == COMPARISON::MINOR; }
-	bool operator <=(const BcdNatural& rightComparand) const { return Compare(rightComparand) != COMPARISON::MAJOR; }
-	bool operator ==(const BcdNatural& rightComparand) const { return Compare(rightComparand) == COMPARISON::EQUAL; }
-	bool operator !=(const BcdNatural& rightComparand) const { return Compare(rightComparand) != COMPARISON::EQUAL; }
-	bool operator >(const BcdNatural& rightComparand) const { return Compare(rightComparand) == COMPARISON::MAJOR; }
-	bool operator >=(const BcdNatural& rightComparand) const { return Compare(rightComparand) != COMPARISON::MINOR; }
+	/* Comparison Operators */
+	bool operator <(const DIGIT rightComparand) const { return NumericVector::Compare(data, rightComparand) == COMPARISON::MINOR; }
+	bool operator <=(const DIGIT rightComparand) const { return NumericVector::Compare(data, rightComparand) != COMPARISON::MAJOR; }
+	bool operator ==(const DIGIT rightComparand) const { return NumericVector::Compare(data, rightComparand) == COMPARISON::EQUAL; }
+	bool operator !=(const DIGIT rightComparand) const { return NumericVector::Compare(data, rightComparand) != COMPARISON::EQUAL; }
+	bool operator >(const DIGIT rightComparand) const { return NumericVector::Compare(data, rightComparand) == COMPARISON::MAJOR; }
+	bool operator >=(const DIGIT rightComparand) const { return NumericVector::Compare(data, rightComparand) != COMPARISON::MINOR; }
 
-	BcdNatural operator +(const BcdNatural& addend) const;
-	BcdNatural& operator ++();
-	BcdNatural operator ++(int) { BcdNatural last = *this; ++*this; return last; }
-	BcdNatural operator -(const BcdNatural& subtrahend) const;
-	BcdNatural& operator --();
-	BcdNatural operator --(int) { BcdNatural last = *this; --*this; return last; }
-	BcdNatural operator *(DIGIT multiplier) const;
-	BcdNatural operator *(const BcdNatural& multiplier) const;
-	BcdNatural operator /(DIGIT divisor) const { DIGIT remainder; return Divide(divisor, remainder); }
-	BcdNatural operator /(const BcdNatural& divisor) const { BcdNatural remainder; return Divide(divisor, remainder); }
-	DIGIT operator %(DIGIT divisor) const { DIGIT remainder; BcdNatural quotient = Divide(divisor, remainder); return remainder; }
-	BcdNatural operator %(const BcdNatural& divisor) const { BcdNatural remainder, quotient = Divide(divisor, remainder); return remainder; }
+	bool operator <(const BcdNatural& rightComparand) const { return NumericVector::Compare(data, rightComparand.data) == COMPARISON::MINOR; }
+	bool operator <=(const BcdNatural& rightComparand) const { return NumericVector::Compare(data, rightComparand.data) != COMPARISON::MAJOR; }
+	bool operator ==(const BcdNatural& rightComparand) const { return NumericVector::Compare(data, rightComparand.data) == COMPARISON::EQUAL; }
+	bool operator !=(const BcdNatural& rightComparand) const { return NumericVector::Compare(data, rightComparand.data) != COMPARISON::EQUAL; }
+	bool operator >(const BcdNatural& rightComparand) const { return NumericVector::Compare(data, rightComparand.data) == COMPARISON::MAJOR; }
+	bool operator >=(const BcdNatural& rightComparand) const { return NumericVector::Compare(data, rightComparand.data) != COMPARISON::MINOR; }
+
+	/* Arithmetic Operators */
+	BcdNatural operator +(const BcdNatural& addend) const { return NumericVector::Add(data, addend.data); }
+	BcdNatural& operator ++() { return (NumericVector::Increment(data), *this); }
+	BcdNatural operator ++(int) { BcdNatural last = *this; NumericVector::Increment(data); return last; }
+	BcdNatural operator -(const BcdNatural& subtrahend) const { return NumericVector::Subtract(data, subtrahend.data); }
+	BcdNatural& operator --() { return (NumericVector::Decrement(data), *this); }
+	BcdNatural operator --(int) { BcdNatural last = *this; NumericVector::Decrement(data); return last; }
+	BcdNatural operator *(DIGIT multiplier) const { return NumericVector::Multiply(data, multiplier); }
+	BcdNatural operator *(const BcdNatural& multiplier) const { return NumericVector::Multiply(data, multiplier.data); }
+	BcdNatural operator /(DIGIT divisor) const { return NumericVector::Divide(data, divisor); }
+	BcdNatural operator /(const BcdNatural& divisor) const { return NumericVector::Divide(data, divisor.data); }
+	DIGIT operator %(DIGIT divisor) const { return NumericVector::Module(data, divisor); }
+	BcdNatural operator %(const BcdNatural& divisor) const { return NumericVector::Module(data, divisor.data); }
 
 	BcdNatural& operator +=(const BcdNatural& addend) { return *this = *this + addend; }
 	BcdNatural& operator -=(const BcdNatural& subtrahend) { return *this = *this - subtrahend; }
@@ -86,9 +94,8 @@ public:
 	BcdNatural& operator /=(const BcdNatural& divisor) { return *this = *this / divisor; }
 	BcdNatural& operator %=(const DIGIT divisor) { return *this = *this % divisor; }
 	BcdNatural& operator %=(const BcdNatural& divisor) { return *this = *this % divisor; }
-protected:
-	BcdNatural Add(const BcdNatural& addend) const;
-	static BcdNatural CalculateGCD(BcdNatural leftValue, BcdNatural rightValue);
+private:
+	VECTOR data;
 };
 
 #endif // BcdNatural_H

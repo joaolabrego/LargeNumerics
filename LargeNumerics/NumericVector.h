@@ -8,33 +8,39 @@
 #ifndef NumericVector_H
 #define NumericVector_H
 
-#include "Config.h"
+#include "NumericString.h"
 
 static const VECTOR NULL = {};
 static const VECTOR ZERO = { 0 };
 static const VECTOR ONE = { 1 };
 
-class NumericVector
+struct NumericVector
 {
+public:
+	/* Assignment Operations */
+	static VECTOR& ToNull(VECTOR& target) { target.clear(); return target; }
+	static VECTOR& ToZero(VECTOR& target) { target = ZERO; return target; }
+	static VECTOR& ToOne(VECTOR& target) { target = ONE; return target; }
+	static VECTOR& ToValue(VECTOR& target, DIGIT value) { return target = { value }; }
+	static VECTOR& ToValue(VECTOR& target, const string& value);
+	static VECTOR& ToValue(VECTOR& target, const char value[]) { return ToValue(target, string(value)); }
+	static VECTOR& ToValue(VECTOR& target, const VECTOR& value) { return target = value; }
+
+	/* String Conversion Operations */
+	static string ToString(const VECTOR& value, const bool grouped);
+
+	/* Subvector Operations */
 	static VECTOR SubVector(const VECTOR& value, const size_t start, size_t length = string::npos);
-	static VECTOR& Assign(VECTOR& target, const VECTOR& value);
-	static VECTOR& Insert(VECTOR& target, const DIGIT value);
-	static VECTOR& Insert(VECTOR& target, const size_t count, const DIGIT value);
-	static VECTOR& Insert(VECTOR& target, const VECTOR& value);
-	static VECTOR& Append(VECTOR& target, const DIGIT value);
-	static VECTOR& Append(VECTOR& target, const size_t count, const DIGIT value);
-	static VECTOR& Append(VECTOR& target, const VECTOR& value);
-	static VECTOR& ToNull(VECTOR& target);
-	static VECTOR& ToZero(VECTOR& target);
-	static VECTOR& ToOne(VECTOR& target);
 
-	static bool IsNull(const VECTOR& value);
-	static bool IsZero(const VECTOR& value);
-	static bool IsNullOrZero(const VECTOR& value);
-	static bool IsOne(const VECTOR& value);
-	static bool IsOdd(const VECTOR& value);
-	static bool IsEven(const VECTOR& value);
+	/* Boolean Attributes */
+	static bool IsNull(const VECTOR& value) { return value.empty(); }
+	static bool IsZero(const VECTOR& value) { return value.size() == 1 && !value.front(); }
+	static bool IsNullOrZero(const VECTOR& value) { return value.empty() || (value.size() == 1 && !value.front()); }
+	static bool IsOne(const VECTOR& value) { return value.size() == 1 && value.front() == 1; }
+	static bool IsOdd(const VECTOR& value) { return value.size() && (value.front() & 0x1); }
+	static bool IsEven(const VECTOR& value) { return value.size() && !(value.front() & 0x1); }
 
+	/* Arithmetic Operations */
 	static COMPARISON Compare(const VECTOR& leftComparand, DIGIT rightComparand);
 	static COMPARISON Compare(const VECTOR& leftComparand, const VECTOR& rightComparand);
 	static void Normalize(VECTOR& value);
