@@ -1,12 +1,12 @@
 /******************************************************************************/
-/*** File-Name: NumericVector.h  	                                        ***/
+/*** File-Name: BcdNumericVector.h  	                                        ***/
 /*** Author...: João da Rocha Labrego                                       ***/
 /*** E-Mail...: joaolabrego@gmail.com                                       ***/
-/*** Purpose..: NumericVector implementation.                               ***/
+/*** Purpose..: BcdNumericVector implementation.                               ***/
 /******************************************************************************/
 
-#ifndef NumericVector_H
-#define NumericVector_H
+#ifndef BcdNumericVector_H
+#define BcdNumericVector_H
 
 #include "NumericString.h"
 
@@ -14,7 +14,7 @@ static const VECTOR NULL = {};
 static const VECTOR ZERO = { 0 };
 static const VECTOR ONE = { 1 };
 
-struct NumericVector
+struct BcdNumericVector
 {
 public:
 	/* Assignment Operations */
@@ -68,7 +68,7 @@ protected:
 	static VECTOR CalculateSum(const VECTOR& augend, const VECTOR& addend);
 	static VECTOR CalculateGCD(VECTOR leftValue, VECTOR rightValue);
 };
-#endif // NumericVector_H
+#endif // BcdNumericVector_H
 /***********/
 /*** EOF ***/
 /***********/

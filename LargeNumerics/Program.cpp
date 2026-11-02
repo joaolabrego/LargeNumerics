@@ -2,10 +2,20 @@
 //
 
 #include <iostream>
+#include "BcdNatural.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    SetConsoleOutputCP(CP_UTF8);
+	auto bn = "123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012"_BcdN,
+        rem = "0"_BcdN;
+
+    auto bn1 = bn.Root(3, rem);
+    std::cout << "Raiz cúbica de " + bn.ToString() + " \né " + bn1.ToString() + " \ne resto " + rem.ToString() + "\n\n";
+
+    auto bn2 = bn.Divide(bn1, rem);
+    std::cout << "A divisão de " + bn.ToString() + " \npor " + bn1.ToString() + " \né " + bn2.ToString() + " \ne resto " + rem.ToString() + "\n\n";
+
     std::cout << "Pressione Enter para continuar...";
     std::cin.get();
 

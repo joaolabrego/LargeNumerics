@@ -1,13 +1,13 @@
 /******************************************************************************/
-/*** File-Name: NumericVector.cpp  	                                        ***/
+/*** File-Name: BcdNumericVector.cpp  	                                        ***/
 /*** Author...: João da Rocha Labrego                                       ***/
 /*** E-Mail...: joaolabrego@gmail.com                                       ***/
-/*** Purpose..: NumericVector implementation.                               ***/
+/*** Purpose..: BcdNumericVector implementation.                               ***/
 /******************************************************************************/
 
-#include "NumericVector.h"
+#include "BcdNumericVector.h"
 /*****************************************************************/
-VECTOR& NumericVector::ToValue(VECTOR& target, const string& value)
+VECTOR& BcdNumericVector::ToValue(VECTOR& target, const string& value)
 /*****************************************************************/
 {
 	char signal;
@@ -18,20 +18,20 @@ VECTOR& NumericVector::ToValue(VECTOR& target, const string& value)
 	if (NumericString::Parse(value, signal, wholePart, decimalPart))
 	{
 		if (signal == char(SIGNAL::NEGATIVE))
-			throw invalid_argument("Valor negativo não permitido em NumericVector");
+			throw invalid_argument("Valor negativo não permitido em BcdNumericVector");
 		if (!decimalPart.empty())
-			throw invalid_argument("Valor deve ser inteiro em NumericVector");
-		wholePart = NumericString::PadLeft(wholePart);
+			throw invalid_argument("Valor deve ser inteiro em BcdNumericVector");
+		wholePart = NumericString::PadLeft(wholePart, DEC::DIGIT_LENGTH);
 		for (size_t i = wholePart.size(); i;)
 			target.push_back(NumericString::StringToDigit(wholePart.substr(i -= DEC::DIGIT_LENGTH, DEC::DIGIT_LENGTH)));
 	}
 	else
-		throw invalid_argument("Valor inválido em NumericVector");
+		throw invalid_argument("Valor inválido em BcdNumericVector");
 
 	return target;
 }
 /*********************************************************************/
-string NumericVector::ToString(const VECTOR& value, const bool grouped)
+string BcdNumericVector::ToString(const VECTOR& value, const bool grouped)
 /*********************************************************************/
 {
 	string result;
@@ -50,7 +50,7 @@ string NumericVector::ToString(const VECTOR& value, const bool grouped)
 }
 
 /*************************************************************************************/
-VECTOR NumericVector::SubVector(const VECTOR& value, const size_t start, size_t length)
+VECTOR BcdNumericVector::SubVector(const VECTOR& value, const size_t start, size_t length)
 /*************************************************************************************/
 {
 	size_t lengthValue = value.size(),
@@ -70,7 +70,7 @@ VECTOR NumericVector::SubVector(const VECTOR& value, const size_t start, size_t 
 	return result;
 }
 /**********************************************************************************/
-COMPARISON NumericVector::Compare(const VECTOR& leftComparand, DIGIT rightComparand)
+COMPARISON BcdNumericVector::Compare(const VECTOR& leftComparand, DIGIT rightComparand)
 /**********************************************************************************/
 {
 	size_t length = leftComparand.size();
@@ -89,7 +89,7 @@ COMPARISON NumericVector::Compare(const VECTOR& leftComparand, DIGIT rightCompar
 	return COMPARISON::EQUAL;
 }
 /******************************************************************************************/
-COMPARISON NumericVector::Compare(const VECTOR& leftComparand, const VECTOR& rightComparand)
+COMPARISON BcdNumericVector::Compare(const VECTOR& leftComparand, const VECTOR& rightComparand)
 /******************************************************************************************/
 {
 	size_t leftLength = leftComparand.size(),
@@ -114,7 +114,7 @@ COMPARISON NumericVector::Compare(const VECTOR& leftComparand, const VECTOR& rig
 	return COMPARISON::EQUAL;
 }
 /******************************************/
-void NumericVector::Normalize(VECTOR& value)
+void BcdNumericVector::Normalize(VECTOR& value)
 /******************************************/
 {
 	size_t length = value.size(),
@@ -133,7 +133,7 @@ void NumericVector::Normalize(VECTOR& value)
 	}
 }
 /****************************************************************************/
-VECTOR NumericVector::CalculateSum(const VECTOR& augend, const VECTOR& addend)
+VECTOR BcdNumericVector::CalculateSum(const VECTOR& augend, const VECTOR& addend)
 /****************************************************************************/
 {
 	VECTOR sum;
@@ -161,7 +161,7 @@ VECTOR NumericVector::CalculateSum(const VECTOR& augend, const VECTOR& addend)
 	return sum;
 }
 /*******************************************************************/
-VECTOR NumericVector::Add(const VECTOR& augend, const VECTOR& addend)
+VECTOR BcdNumericVector::Add(const VECTOR& augend, const VECTOR& addend)
 /*******************************************************************/
 {
 	size_t leftLength = augend.size(),
@@ -181,7 +181,7 @@ VECTOR NumericVector::Add(const VECTOR& augend, const VECTOR& addend)
 	return NULL;
 }
 /**********************************************/
-VECTOR& NumericVector::Increment(VECTOR& augend)
+VECTOR& BcdNumericVector::Increment(VECTOR& augend)
 /**********************************************/
 {
 	size_t length = augend.size(),
@@ -200,7 +200,7 @@ VECTOR& NumericVector::Increment(VECTOR& augend)
 	return augend;
 }
 /*****************************************************************************/
-VECTOR NumericVector::Subtract(const VECTOR& minuend, const VECTOR& subtrahend)
+VECTOR BcdNumericVector::Subtract(const VECTOR& minuend, const VECTOR& subtrahend)
 /*****************************************************************************/
 {
 	VECTOR difference;
@@ -236,7 +236,7 @@ VECTOR NumericVector::Subtract(const VECTOR& minuend, const VECTOR& subtrahend)
 	return difference;
 }
 /***********************************************/
-VECTOR& NumericVector::Decrement(VECTOR& minuend)
+VECTOR& BcdNumericVector::Decrement(VECTOR& minuend)
 /***********************************************/
 {
 	size_t length = minuend.size(),
@@ -262,7 +262,7 @@ VECTOR& NumericVector::Decrement(VECTOR& minuend)
 	return minuend;
 }
 /********************************************************************************/
-VECTOR NumericVector::Multiply(VECTOR multiplicand, const DIGIT multiplier)
+VECTOR BcdNumericVector::Multiply(VECTOR multiplicand, const DIGIT multiplier)
 /********************************************************************************/
 {
 	size_t length = multiplicand.size();
@@ -294,7 +294,7 @@ VECTOR NumericVector::Multiply(VECTOR multiplicand, const DIGIT multiplier)
 	return product;
 }
 /**********************************************************************************/
-VECTOR NumericVector::Multiply(const VECTOR& multiplicand, const VECTOR& multiplier)
+VECTOR BcdNumericVector::Multiply(const VECTOR& multiplicand, const VECTOR& multiplier)
 /**********************************************************************************/
 {
 	size_t leftLength = multiplicand.size(),
@@ -337,7 +337,7 @@ VECTOR NumericVector::Multiply(const VECTOR& multiplicand, const VECTOR& multipl
 	return product;
 }
 /**********************************************************************************/
-VECTOR NumericVector::Divide(VECTOR dividend, const DIGIT divisor, DIGIT& remainder)
+VECTOR BcdNumericVector::Divide(VECTOR dividend, const DIGIT divisor, DIGIT& remainder)
 /**********************************************************************************/
 {
 	size_t length = dividend.size();
@@ -378,7 +378,7 @@ VECTOR NumericVector::Divide(VECTOR dividend, const DIGIT divisor, DIGIT& remain
 	return quotient;
 }
 /******************************************************************************/
-VECTOR NumericVector::Divide(VECTOR dividend, VECTOR divisor, VECTOR& remainder)
+VECTOR BcdNumericVector::Divide(VECTOR dividend, VECTOR divisor, VECTOR& remainder)
 /******************************************************************************/
 {
 	const size_t dividendLength = dividend.size(), 
@@ -435,7 +435,7 @@ VECTOR NumericVector::Divide(VECTOR dividend, VECTOR divisor, VECTOR& remainder)
 	return quotient;
 }
 /********************************************************/
-void NumericVector::ShiftLeft(VECTOR& value, size_t count)
+void BcdNumericVector::ShiftLeft(VECTOR& value, size_t count)
 /********************************************************/
 {
 	size_t wholeShift,
@@ -466,7 +466,7 @@ void NumericVector::ShiftLeft(VECTOR& value, size_t count)
 	}
 }
 /***********************************************************/
-VECTOR NumericVector::ShiftRight(VECTOR& value, size_t count)
+VECTOR BcdNumericVector::ShiftRight(VECTOR& value, size_t count)
 /***********************************************************/
 {
 	VECTOR discarded;
@@ -510,7 +510,7 @@ VECTOR NumericVector::ShiftRight(VECTOR& value, size_t count)
 	return discarded;
 }
 /*******************************************************/
-VECTOR NumericVector::Power(VECTOR base, size_t exponent)
+VECTOR BcdNumericVector::Power(VECTOR base, size_t exponent)
 /*******************************************************/
 {
 	VECTOR potency;
@@ -539,7 +539,7 @@ VECTOR NumericVector::Power(VECTOR base, size_t exponent)
 	return potency;
 }
 /********************************************************************************************************/
-void NumericVector::CalculateDigit(const VECTOR& radicand, size_t degree, VECTOR& root, VECTOR& remainder)
+void BcdNumericVector::CalculateDigit(const VECTOR& radicand, size_t degree, VECTOR& root, VECTOR& remainder)
 /********************************************************************************************************/
 {
 	VECTOR potency;
@@ -623,7 +623,7 @@ void NumericVector::CalculateDigit(const VECTOR& radicand, size_t degree, VECTOR
 	remainder = Subtract(radicand, potency);
 }
 /**********************************************************************************/
-VECTOR NumericVector::Root(const VECTOR& radicand, size_t degree, VECTOR& remainder)
+VECTOR BcdNumericVector::Root(const VECTOR& radicand, size_t degree, VECTOR& remainder)
 /**********************************************************************************/
 {
 	VECTOR root,
@@ -650,7 +650,7 @@ VECTOR NumericVector::Root(const VECTOR& radicand, size_t degree, VECTOR& remain
 	return root;
 }
 /*********************************************************************/
-VECTOR NumericVector::CalculateGCD(VECTOR leftValue, VECTOR rightValue)
+VECTOR BcdNumericVector::CalculateGCD(VECTOR leftValue, VECTOR rightValue)
 /*********************************************************************/
 {
 	VECTOR quotient,
@@ -664,7 +664,7 @@ VECTOR NumericVector::CalculateGCD(VECTOR leftValue, VECTOR rightValue)
 	return rightValue;
 }
 /**************************************************************************/
-VECTOR NumericVector::GCD(const VECTOR& leftValue, const VECTOR& rightValue)
+VECTOR BcdNumericVector::GCD(const VECTOR& leftValue, const VECTOR& rightValue)
 /**************************************************************************/
 {
 	COMPARISON comparison;
@@ -682,7 +682,7 @@ VECTOR NumericVector::GCD(const VECTOR& leftValue, const VECTOR& rightValue)
 	return NULL;
 }
 /**************************************************************************/
-VECTOR NumericVector::LCM(const VECTOR& leftValue, const VECTOR& rightValue)
+VECTOR BcdNumericVector::LCM(const VECTOR& leftValue, const VECTOR& rightValue)
 /**************************************************************************/
 {
 	VECTOR result,
@@ -703,7 +703,7 @@ VECTOR NumericVector::LCM(const VECTOR& leftValue, const VECTOR& rightValue)
 	return NULL;
 }
 /*******************************************/
-VECTOR NumericVector::Factorial(VECTOR value)
+VECTOR BcdNumericVector::Factorial(VECTOR value)
 /*******************************************/
 {
 	VECTOR result;

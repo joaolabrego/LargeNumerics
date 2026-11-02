@@ -21,7 +21,7 @@
     <ClCompile Include="NumericString.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="NumericVector.cpp">
+    <ClCompile Include="BcdNumericVector.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="Config.cpp">
@@ -35,7 +35,7 @@
     <ClInclude Include="NumericString.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="NumericVector.h">
+    <ClInclude Include="BcdNumericVector.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">

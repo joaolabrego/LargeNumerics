@@ -35,7 +35,7 @@ namespace BIN
 {
 	static const DIGIT RADIX = 2;
 	static const size_t DIGIT_LENGTH = sizeof(DIGIT) * CHAR_BIT;
-	static DIGIT BASE = DIGIT(pow(RADIX, DIGIT_LENGTH));
+	static DOUBLE_DIGIT BASE = DOUBLE_DIGIT(pow(RADIX, DIGIT_LENGTH));
 	static DIGIT MAXIMUM_VALUE = DIGIT(BASE - 1);
 };
 namespace DEC
