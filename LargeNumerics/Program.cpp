@@ -3,18 +3,46 @@
 
 #include <iostream>
 #include "BcdNatural.h"
+#include <chrono>
 
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
-	auto bn = "123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012123456789012"_BcdN,
-        rem = "0"_BcdN;
+    BcdNatural bn = BcdNatural(NumericString::Replicate("123456789012", 1000));
+    BcdNatural rem = "0"_BcdN;
+    BcdNatural bn1 = BcdNatural(NumericString::Replicate("987654321", 500));
 
-    auto bn1 = bn.Root(3, rem);
-    std::cout << "Raiz cúbica de " + bn.ToString() + " \né " + bn1.ToString() + " \ne resto " + rem.ToString() + "\n\n";
 
+    auto inicio = std::chrono::steady_clock::now();
     auto bn2 = bn.Divide(bn1, rem);
-    std::cout << "A divisão de " + bn.ToString() + " \npor " + bn1.ToString() + " \né " + bn2.ToString() + " \ne resto " + rem.ToString() + "\n\n";
+    auto fim = std::chrono::steady_clock::now();
+    std::cout << "Divisão: " << std::chrono::duration<double>(fim - inicio).count() << " segundos\n";
+    //std::cout << "Divisão: " << "A divisão de " + bn.AsString() + " \npor " + bn1.AsString() + " \né " + bn2.AsString() + " \ne resto " + rem.AsString() + "\n\n";
+
+    inicio = std::chrono::steady_clock::now();
+    auto bn6 = bn - bn1;
+    fim = std::chrono::steady_clock::now();
+    std::cout << "Subtração: " << std::chrono::duration<double>(fim - inicio).count() << " segundos\n";
+    //std::cout << "Raiz cúbica de " + bn.AsString() + " \né " + bn3.AsString() + " \ne resto " + rem.AsString() + "\n\n";
+
+
+    inicio = std::chrono::steady_clock::now();
+    auto bn3 = bn.Root(3, rem);
+    fim = std::chrono::steady_clock::now();
+    std::cout << "Radiciação: " << std::chrono::duration<double>(fim - inicio).count() << " segundos\n";
+    //std::cout << "Raiz cúbica de " + bn.AsString() + " \né " + bn3.AsString() + " \ne resto " + rem.AsString() + "\n\n";
+
+    inicio = std::chrono::steady_clock::now();
+    auto bn4 = bn >> 2;
+    fim = std::chrono::steady_clock::now();
+    std::cout << "ShiftRigth: " << std::chrono::duration<double>(fim - inicio).count() << " segundos\n";
+    //std::cout << "ShiftRigth \né " + bn.AsString() + " \ne descartados " + bn4.AsString() + "\n\n";
+
+    inicio = std::chrono::steady_clock::now();
+    auto bn5 = bn << 2;
+    fim = std::chrono::steady_clock::now();
+    std::cout << "ShiftLeft: " << std::chrono::duration<double>(fim - inicio).count() << " segundos\n";
+    //std::cout << "ShiftLeft \né " + bn.AsString() + " \ne descartados " + bn5.AsString() + "\n\n";
 
     std::cout << "Pressione Enter para continuar...";
     std::cin.get();

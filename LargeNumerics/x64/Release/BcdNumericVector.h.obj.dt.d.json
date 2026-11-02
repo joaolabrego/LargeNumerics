@@ -4,7 +4,7 @@
         "Source": "d:\\largenumerics\\largenumerics\\bcdnumericvector.h",
         "ProvidedModule": "",
         "Includes": [
-            "d:\\largenumerics\\largenumerics\\bcdnumericstring.h",
+            "d:\\largenumerics\\largenumerics\\numericstring.h",
             "d:\\largenumerics\\largenumerics\\config.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.28000.0\\um\\windows.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.28000.0\\shared\\winapifamily.h",

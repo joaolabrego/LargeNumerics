@@ -141,14 +141,15 @@
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="NumericString.cpp" />
-    <ClCompile Include="BcdNumericVector.cpp" />
+    <ClCompile Include="BcdVector.cpp" />
     <ClCompile Include="Program.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BcdNatural.h" />
+    <ClInclude Include="BigVector.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="NumericString.h" />
-    <ClInclude Include="BcdNumericVector.h" />
+    <ClInclude Include="BcdVector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

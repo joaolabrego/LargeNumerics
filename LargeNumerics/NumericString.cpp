@@ -96,9 +96,9 @@ string NumericString::Replace(const string& value, const string& oldValue, const
 
 	return result;
 }
-/**********************************************************************/
-string NumericString::Replicate(const string& value, const size_t count)
-/**********************************************************************/
+/****************************************************************/
+string NumericString::Replicate(const string& value, size_t count)
+/****************************************************************/
 {
 	size_t lengthvalue = value.size(),
 		limit;
@@ -106,6 +106,7 @@ string NumericString::Replicate(const string& value, const size_t count)
 
 	if (lengthvalue && count)
 	{
+		count *= lengthvalue;
 		limit = count / lengthvalue;
 		for (size_t i = 0; i < limit; ++i) result.append(value);
 		result.append(value.substr(0, count % lengthvalue));

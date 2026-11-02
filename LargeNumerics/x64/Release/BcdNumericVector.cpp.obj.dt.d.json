@@ -1,0 +1,12 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\largenumerics\\largenumerics\\bcdnumericvector.cpp",
+        "ProvidedModule": "",
+        "Includes": [
+            "d:\\largenumerics\\largenumerics\\bcdvector.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

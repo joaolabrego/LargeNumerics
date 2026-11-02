@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Release\\BigNumericVector.obj",
+            "outputs": [
+                "x64\\Release\\BigNumericVector.h.obj.dt.module.json",
+                "x64\\Release\\BigNumericVector.h.obj.dt.d.json"
+            ],
+            "requires": []
+        }
+    ]
+}
